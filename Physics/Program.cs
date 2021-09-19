@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
+using System.Linq;
 
 namespace Physics
 {
@@ -55,19 +56,21 @@ namespace Physics
                 Directory.CreateDirectory(directory);
             string path = Path.Combine("Graphics", $"graphic_{Directory.GetFiles("Graphics").Length}.jpg");
 
-            var image = new Bitmap(1200, 1000); // 6, 5
+            var image = new Bitmap(1200, 1200); 
+            var size = Math.Max(points.Max(i => i.X), points.Max(i => i.Y)) / 1200;
             using (var graphic = Graphics.FromImage(image))
             {
                 graphic.Clear(Color.White);
                 string values = $"Начальная скорость V0={V0} м/с" + '\n' +
                                 $"Угол к горизонту fi={fi}°" + '\n' +
                                 $"Коэффициент сопротивления воздуха k={k} 1/с" + '\n' +
-                                $"Ускорение свободного падения g={g} м/с^2" + '\n';
+                                $"Ускорение свободного падения g={g} м/с^2" + '\n' +
+                                $"Масштаб 1 к {(int)size} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
                 graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 995f, 1200f, 995f);
                 graphic.TranslateTransform(0, 1000);
-                graphic.ScaleTransform(1f / 200, -1f / 200);
-                graphic.DrawLines(new Pen(Color.Black, 3 * 200f), points);
+                graphic.ScaleTransform(1f / size, -1f / size);
+                graphic.DrawLines(new Pen(Color.Black, 3 * size), points);
             }
             image.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
             image.Dispose();
