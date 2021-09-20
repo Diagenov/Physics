@@ -37,16 +37,14 @@ namespace Physics
             double X(double t) => V0 * Math.Cos(fi) * (1 - Math.Exp(-k * t)) / k;
             double Y(double t) => ((V0 * Math.Sin(fi) + (g / k)) * (1 - Math.Exp(-k * t)) / k) - (g * t / k);
 
-            int time = 0;
+            float time = 0;
             var points = new List<PointF>();
-            for (float y;; time++) // Ищем точки с ходом в одну секунду
+            for (float y = 0; y >= 0; time += 0.5f) // Ищем точки с ходом в пол секунды
             {
                 y = (float)Y(time);
-                if (y < 0)
-                    break;
                 points.Add(new PointF((float)X(time), y)); 
             }
-            Draw(points.ToArray(), V0, angle, k, time);
+            Draw(points.ToArray(), V0, angle, k, (int)time);
             Console.WriteLine("Готово!\n\nНажмите любую клавишу.");
         }
 
@@ -73,7 +71,7 @@ namespace Physics
                                 $"Дальность полета {Math.Round(maxX, 1)} м" + '\n' + 
                                 $"Высота полета {Math.Round(maxY, 1)} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
-                graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 1195f, 1200f, 1195f);
+                graphic.DrawLine(new Pen(Color.SandyBrown, 7f), 0f, 1195f, 1200f, 1195f);
                 if (points.Length > 1)
                 {
                     graphic.TranslateTransform(0, 1200);
