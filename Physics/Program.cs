@@ -37,19 +37,20 @@ namespace Physics
             double X(double t) => V0 * Math.Cos(fi) * (1 - Math.Exp(-k * t)) / k;
             double Y(double t) => ((V0 * Math.Sin(fi) + (g / k)) * (1 - Math.Exp(-k * t)) / k) - (g * t / k);
 
+            int time = 0;
             var points = new List<PointF>();
-            for (float y, t = 0;; t++) // Ищем точки с ходом в одну секунду
+            for (float y;; time++) // Ищем точки с ходом в одну секунду
             {
-                y = (float)Y(t);
+                y = (float)Y(time);
                 if (y < 0)
                     break;
-                points.Add(new PointF((float)X(t), y)); 
+                points.Add(new PointF((float)X(time), y)); 
             }
-            Draw(points.ToArray(), V0, angle, k);
+            Draw(points.ToArray(), V0, angle, k, time);
             Console.WriteLine("Готово!\n\nНажмите любую клавишу.");
         }
 
-        static void Draw(PointF[] points, double V0, double fi, double k)
+        static void Draw(PointF[] points, double V0, double fi, double k, int t)
         {
             string directory = Path.Combine("Graphics");
             if (!Directory.Exists(directory))
@@ -57,15 +58,22 @@ namespace Physics
             string path = Path.Combine("Graphics", $"graphic_{Directory.GetFiles("Graphics").Length}.jpg");
 
             var image = new Bitmap(1200, 1200); 
-            var size = Math.Max(points.Max(i => i.X), points.Max(i => i.Y)) / 1200;
+            float maxX = points.Max(i => i.X),
+                  maxY = points.Max(i => i.Y),
+                  size;
+            if (maxX > maxY)
+                size = maxX / 1200;
+            else
+                size = maxY / 1000;
             using (var graphic = Graphics.FromImage(image))
             {
                 graphic.Clear(Color.White);
-                string values = $"Начальная скорость V0={V0} м/с" + '\n' +
-                                $"Угол к горизонту fi={fi}°" + '\n' +
-                                $"Коэффициент сопротивления воздуха k={k} 1/с" + '\n' +
-                                $"Ускорение свободного падения g={g} м/с^2" + '\n' +
-                                $"Масштаб 1 к {(int)size} м";
+                string values = $"Начальная скорость {V0} м/с" + '\n' +
+                                $"Угол к горизонту {fi}°" + '\n' +
+                                $"Коэффициент сопротивления воздуха {k} 1/с" + '\n' +
+                                $"Время полета {t} с" + '\n' +
+                                $"Дальность полета {maxX} м" + '\n' + 
+                                $"Высота полета {maxY} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
                 graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 995f, 1200f, 995f);
                 graphic.TranslateTransform(0, 1000);
