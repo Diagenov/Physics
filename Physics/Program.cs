@@ -60,11 +60,7 @@ namespace Physics
             var image = new Bitmap(1200, 1200); 
             float maxX = points.Max(i => i.X),
                   maxY = points.Max(i => i.Y),
-                  size;
-            if (maxX > maxY)
-                size = maxX / 1200;
-            else
-                size = maxY / 1000;
+                  size = Math.Max(maxX, maxY) / 1200;
             using (var graphic = Graphics.FromImage(image))
             {
                 graphic.Clear(Color.White);
@@ -75,8 +71,8 @@ namespace Physics
                                 $"Дальность полета {maxX} м" + '\n' + 
                                 $"Высота полета {maxY} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
-                graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 995f, 1200f, 995f);
-                graphic.TranslateTransform(0, 1000);
+                graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 1195f, 1200f, 1195f);
+                graphic.TranslateTransform(0, 1200);
                 graphic.ScaleTransform(1f / size, -1f / size);
                 graphic.DrawLines(new Pen(Color.Black, 3 * size), points);
             }
