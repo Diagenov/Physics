@@ -60,7 +60,9 @@ namespace Physics
             var image = new Bitmap(1200, 1200); 
             float maxX = points.Max(i => i.X),
                   maxY = points.Max(i => i.Y),
-                  size = Math.Max(maxX, maxY) / 1200;
+                  size = Math.Max(maxX, maxY) / 1100;
+            if (size < 0.00001f)
+                size = 0.00001f;
             using (var graphic = Graphics.FromImage(image))
             {
                 graphic.Clear(Color.White);
@@ -68,13 +70,16 @@ namespace Physics
                                 $"Угол к горизонту {fi}°" + '\n' +
                                 $"Коэффициент сопротивления воздуха {k} 1/с" + '\n' +
                                 $"Время полета {t} с" + '\n' +
-                                $"Дальность полета {maxX} м" + '\n' + 
-                                $"Высота полета {maxY} м";
+                                $"Дальность полета {Math.Round(maxX, 1)} м" + '\n' + 
+                                $"Высота полета {Math.Round(maxY, 1)} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
                 graphic.DrawLine(new Pen(Color.SandyBrown, 5f), 0f, 1195f, 1200f, 1195f);
-                graphic.TranslateTransform(0, 1200);
-                graphic.ScaleTransform(1f / size, -1f / size);
-                graphic.DrawLines(new Pen(Color.Black, 3 * size), points);
+                if (points.Length > 1)
+                {
+                    graphic.TranslateTransform(0, 1200);
+                    graphic.ScaleTransform(1f / size, -1f / size);
+                    graphic.DrawLines(new Pen(Color.Black, 3 * size), points);
+                }
             }
             image.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
             image.Dispose();
