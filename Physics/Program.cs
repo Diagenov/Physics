@@ -37,18 +37,28 @@ namespace Physics
             double X(double t) => V0 * Math.Cos(fi) * (1 - Math.Exp(-k * t)) / k;
             double Y(double t) => ((V0 * Math.Sin(fi) + (g / k)) * (1 - Math.Exp(-k * t)) / k) - (g * t / k);
 
-            float time = 0;
+            float time = 0, y = 0;
             var points = new List<PointF>();
-            for (float y = 0; y >= 0; time += 0.5f) // Ищем точки с ходом в пол секунды
+            for (; y >= 0; time++) // Ищем точки с ходом в секунду
             {
                 y = (float)Y(time);
                 points.Add(new PointF((float)X(time), y)); 
             }
-            Draw(points.ToArray(), V0, angle, k, (int)time);
+            if (points.Count < 50)
+            {
+                var step = time / 50f;
+                points.Clear();
+                for (y = 0, time = 0; y >= 0; time += step) // Ищем точки с ходом, который дает 25 и более точек
+                {
+                    y = (float)Y(time);
+                    points.Add(new PointF((float)X(time), y));
+                }
+            }
+            Draw(points.ToArray(), V0, angle, k, time);
             Console.WriteLine("Готово!\n\nНажмите любую клавишу.");
         }
 
-        static void Draw(PointF[] points, double V0, double fi, double k, int t)
+        static void Draw(PointF[] points, double V0, double fi, double k, float t)
         {
             string directory = Path.Combine("Graphics");
             if (!Directory.Exists(directory))
@@ -67,7 +77,7 @@ namespace Physics
                 string values = $"Начальная скорость {V0} м/с" + '\n' +
                                 $"Угол к горизонту {fi}°" + '\n' +
                                 $"Коэффициент сопротивления воздуха {k} 1/с" + '\n' +
-                                $"Время полета {t} с" + '\n' +
+                                $"Время полета {Math.Round(t, 1)} с" + '\n' +
                                 $"Дальность полета {Math.Round(maxX, 1)} м" + '\n' + 
                                 $"Высота полета {Math.Round(maxY, 1)} м";
                 graphic.DrawString(values, new Font("Calibri", 15f, FontStyle.Bold | FontStyle.Italic), Brushes.DarkBlue, 700, 10);
