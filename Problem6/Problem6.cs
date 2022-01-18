@@ -70,6 +70,7 @@ namespace Problem6
 
         void Draw(List<double> x, List<double> y, double A, double T)
         {
+            chart1.Series.Clear();
             chart1.ChartAreas[0].AxisX.Title = "t";
             chart1.ChartAreas[0].AxisY.Title = "y";
             chart1.Series.Add($"A = {A}" + '\n' +
